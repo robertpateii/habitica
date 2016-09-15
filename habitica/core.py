@@ -30,6 +30,7 @@ try:
 except:
     import configparser
 
+from . import checklists
 
 VERSION = 'habitica version 0.0.15'
 TASK_VALUE_BASE = 0.9747  # http://habitica.wikia.com/wiki/Task_Value
@@ -226,10 +227,20 @@ def cli():
       todos add <task>       Add todo with description <task>
       server                 Show status of Habitica service
       home                   Open tasks page in default browser
+      check t <task-id>      Show a single todo and its full checklist
+      check d <task-id>      Show a single daily and its full checklist
+      check t <task-id> <name>  Add a checklist item to a single todo with the provided name
+      check d <task-id> <name>  Add a checklist item to a single daily with the provided name
+      check t <task-id> <ids>   Check off the provided items within a single todo
+      check d <task-id> <ids>   Check off the provided items within a single daily
 
     For `habits up|down`, `dailies done|undo`, and `todos done`, you can pass
     one or more <task-id> parameters, using either comma-separated lists or
     ranges or both. For example, `todos done 1,3,6-9,11`.
+
+    For `check t|d...` you can only pass a single <task-id> parameter, but the
+    checklist <ids> parameter can use a comma-separated list or ranges or both as
+    with the other commands.
 
     To show checklists with "todos" and "dailies" permanently, set
     'checklists' in your auth.cfg file to `checklists = true`.
@@ -429,6 +440,10 @@ def cli():
             todos.insert(0, {'completed': False, 'text': ttext})
             print('added new todo \'%s\'' % ttext.encode('utf8'))
         print_task_list(todos)
+
+    # GET task:checklist
+    elif args['<command>'] == 'check':
+        checklists.check(args, hbt.user.tasks)
 
 
 if __name__ == '__main__':
